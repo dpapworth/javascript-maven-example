@@ -1,0 +1,90 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>com.vibrantmedia.javascript</groupId>
+    <artifactId>parent</artifactId>
+    <version>1.0-SNAPSHOT</version>
+    <packaging>pom</packaging>
+
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    </properties>
+
+    <build>
+        <plugins>
+
+            <!-- Create artifact -->
+            <plugin>
+                <artifactId>maven-assembly-plugin</artifactId>
+                <version>2.2-beta-5</version>
+                <dependencies>
+                    <dependency>
+                        <groupId>com.vibrantmedia.javascript</groupId>
+                        <artifactId>assembly</artifactId>
+                        <version>1.0-SNAPSHOT</version>
+                    </dependency>
+                </dependencies>
+                <executions>
+                    <execution>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>single</goal>
+                        </goals>
+                        <configuration>
+                            <descriptorRefs>
+                                <descriptorRef>javascript</descriptorRef>
+                            </descriptorRefs>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <!-- Copy Javascript dependencies -->
+            <plugin>
+                <artifactId>maven-dependency-plugin</artifactId>
+                <version>2.1</version>
+                <executions>
+                    <execution>
+                        <phase>process-sources</phase>
+                        <goals>
+                            <goal>unpack-dependencies</goal>
+                        </goals>
+                        <configuration>
+                            <classifier>javascript</classifier>
+                            <type>zip</type>
+                            <failOnMissingClassifierArtifact>false</failOnMissingClassifierArtifact>
+                            <outputDirectory>target/javascript-dependencies</outputDirectory>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <!-- Execute Javascript tests -->
+            <plugin>
+                <groupId>com.github.searls</groupId>
+                <artifactId>jasmine-maven-plugin</artifactId>
+                <version>1.1.0</version>
+                <executions>
+                    <execution>
+                        <phase>test</phase>
+                        <goals>
+                            <goal>test</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <jsSrcDir>${project.basedir}</jsSrcDir>
+                    <jsTestSrcDir>src/test/javascript</jsTestSrcDir>
+                    <sourceIncludes>
+                        <sourceInclude>target/javascript-dependencies/**/*.js</sourceInclude>
+                        <sourceInclude>src/main/javascript/**/*.js</sourceInclude>
+                    </sourceIncludes>
+                </configuration>
+            </plugin>
+
+        </plugins>
+    </build>
+
+</project>
